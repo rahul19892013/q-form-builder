@@ -1,3 +1,14 @@
+/* eslint-disable quote-props */
+/* eslint-disable no-unreachable */
+/* eslint-disable no-labels */
+/* eslint-disable no-lone-blocks */
+/* eslint-disable eqeqeq */
+/* eslint-disable space-unary-ops */
+/* eslint-disable semi */
+/* eslint-disable arrow-spacing */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable space-infix-ops */
+
 export function defaultFieldOptions (type) {
   switch (type) {
     case 'checkboxes':

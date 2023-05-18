@@ -1,4 +1,4 @@
-import QFormBuilder from './QFormBuilder'
+import QFormBuilder from './DesignCategoryFlow'
 import TextElement from './elements/TextElement'
 import ParagraphElement from './elements/ParagraphElement'
 import CheckboxesElement from './elements/CheckboxesElement'

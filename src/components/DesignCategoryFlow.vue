@@ -21,7 +21,59 @@
 
     <q-page-container>
       <q-page class="q-form-builder-page">
+        <div class="bar error" v-if="errorMessage">{{ errorMessage }}</div>
+        <center>
+        <template>
+  <div class="q-pa-md">
+    <q-btn-dropdown
+      split
+      class="glossy"
+      color="teal"
+      label="Select Any Item To Start"
+      v-if="showItemsddl"
+    >
+      <q-list>
+        <q-item clickable v-close-popup @click="onItemClick" v-for="(item,index) in items" :key="index">
+          <!-- <q-item-section avatar>
+            <q-avatar icon="folder" color="primary" text-color="white" />
+          </q-item-section> -->
+          <q-item-section>
+            <q-item-label text-color="black">{{item.name}}</q-item-label>
+            <q-item-label caption>{{item.description}}</q-item-label>
+          </q-item-section>
+          <!-- <q-item-section side>
+            <q-icon name="info" color="amber" />
+          </q-item-section> -->
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
 
+    <q-btn-dropdown
+      split
+      class="glossy"
+      color="teal"
+      label="Select Your Action"
+      v-if="showActionsddl"
+    >
+      <q-list>
+        <q-item clickable v-close-popup @click="onItemClick" v-for="(item,index) in actions" :key="index">
+          <!-- <q-item-section avatar>
+            <q-avatar icon="folder" color="primary" text-color="white" />
+          </q-item-section> -->
+          <q-item-section>
+            <q-item-label text-color="black">{{item.name}}</q-item-label>
+            <q-item-label caption>{{item.description}}</q-item-label>
+          </q-item-section>
+          <!-- <q-item-section side>
+            <q-icon name="info" color="amber" />
+          </q-item-section> -->
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+
+  </div>
+</template>
+</center>
         <draggable v-model="fields" @change="onChange" :options="destinationOptions" :class="{ 'q-form-builder-elements-container': true, 'empty': fields.length == 0 }">
           <div class="editable-element-container" v-for="(field, idx) in fields" :key="idx">
             <editable-element v-model="fields[idx]" @click="selectForEdit" :class="{'selected': isSelectedForEdit(idx)}" :ref="fields[idx].cid" />
@@ -31,7 +83,6 @@
             </div>
           </div>
         </draggable>
-
       </q-page>
     </q-page-container>
   </q-layout>
@@ -57,9 +108,11 @@ import draggable from 'vuedraggable'
 import EditableElement from './editable/EditableElement'
 import EditableElementOptions from './editable/EditableElementOptions'
 import * as utils from './utils'
+import axios from 'axios'
+import APISettings from './ApiSettings'
 
 export default {
-  name: 'QFormBuilder',
+  name: 'DesignCategoryFlow',
   components: { EditableElement, EditableElementOptions, draggable, QLayout, QPageContainer, QPage, QDrawer, QTab, QTabs, QTabPanel, QTabPanels, QTooltip, QBtn },
   data () {
     return {
@@ -67,7 +120,12 @@ export default {
       drawer: true,
       tab: 'add',
       currentField: false,
-      hovered: []
+      hovered: [],
+      errorMessage: '',
+      items: {},
+      actions: {},
+      showItemsddl: true,
+      showActionsddl: false
     }
   },
   props: {
@@ -100,6 +158,8 @@ export default {
         { type: 'file', icon: 'cloud_upload', label: 'File Upload' },
         { type: 'payment', icon: 'payment', label: 'Payment' },
         { type: 'terms', icon: 'ballot', label: 'Terms' },
+        { type: '' },
+        { type: '' },
         { type: '' },
         { type: '' },
         { type: '' },
@@ -153,7 +213,26 @@ export default {
         if (field.cid === cid) return field
       }
       return false
-    }
+    },
+    showError (e) {
+    if (typeof (e.response) !== 'undefined') {
+     switch (e.response.status) {
+       case 401:
+       this.errorMessage = 'Unauthorized'
+        break
+       default:
+       this.errorMessage = e.message
+         break
+     }
+   } else {
+     this.errorMessage = e.message
+   }
+       console.log(e)
+   },
+   onItemClick (e) {
+    this.showItemsddl = false
+    this.showActionsddl = true
+   }
   },
   computed: {
     sourceOptions: () => {
@@ -189,6 +268,28 @@ export default {
       this.fields = val
       if (this.currentField) this.selectForEdit(this.getFieldByCid(this.currentField.cid))
     }
+  },
+  mounted () {
+    this.errorMessage = ''
+    axios.get(APISettings.baseURL + 'Items/GetItems',
+   {
+       headers: APISettings.getHeaders()[0],
+       params: APISettings.axiosParams()
+   }).then(res => {
+     this.items = res.data.data.items
+   }).catch(e => {
+     this.showError(e)
+   })
+
+   axios.get(APISettings.baseURL + 'Actions/GetActions',
+   {
+       headers: APISettings.getHeaders()[0],
+       params: APISettings.axiosParams(3, 7)
+   }).then(res => {
+     this.actions = res.data.data.items
+   }).catch(e => {
+     this.showError(e)
+   })
   }
 }
 
@@ -230,5 +331,11 @@ export default {
   .editable-element-button
     float right
     margin-right 5px
+
+  .error
+      padding: 10px
+      color: #ba3939
+      background: #ffe0e0
+      border: 1px solid #a33a3a
 
 </style>
