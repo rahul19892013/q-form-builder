@@ -1,110 +1,48 @@
+<!-- eslint-disable space-before-function-paren -->
 <!-- eslint-disable semi -->
 <!-- eslint-disable semi -->
-<template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-toolbar-title>
-          <a href="" style="color: white; text-decoration: none; ">Quote Me Easy</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <q-btn no-caps color="primary" label="Items" @click="onShowItems"/>&nbsp;
-          <q-btn no-caps color="primary" label="Actions" @click="onShowActions"/>&nbsp;
-          <q-btn no-caps color="primary" label="Lookups" @click="onShowLookups"/>&nbsp;
-          <q-btn no-caps color="primary" label="Fields" @click="onShowFields"/>&nbsp;
-        </q-toolbar-title>
-        <!-- <div>Quasar v{{ $q.version }}</div> -->
-        <div>
-          <q-btn no-caps color="primary" label="Design Form" @click="onShowDesignForm"/>&nbsp;
-        </div>
-      </q-toolbar>
-    </q-header>
-
-    <q-page-container>
-      <items v-if="showItems"/>
-      <actions v-if="showActions"/>
-      <lookups v-if="showLookups"/>
-      <fields v-if="showFields"/>
-    </q-page-container>
-
-    <q-page-container v-if="showDesignForm">
-      <q-page>
-
-        <!-- form building -->
-        <q-form-builder v-model="fields" />
-
-        <q-separator />
-
-        <!-- form rendering -->
-        <div class="q-pa-md q-form-container">
-          <h4>Form Rendering</h4>
-          <div v-for="(field, index) in fields" :key="index">
-            <component v-model="fieldData[field.cid]" @input="onInput" v-bind:is="getElement(field)" :label="field.label" :required="field.required" :field_options="field.field_options" :id="field.cid" :cid="field.cid" :ref="field.cid" debounce="500" />
-          </div>
-          <q-btn no-caps color="primary" label="Save Schema" @click="saveSchema"/>
-        </div>
-      </q-page>
-    </q-page-container>
-  </q-layout>
-</template>
-
 <script>
+// // import axios from 'axios'
 
-import { QFormBuilder, TextElement, ParagraphElement, CheckboxesElement, RadioElement, DateElement, TimeElement, DropdownElement, EmailElement, NameElement, SimpleNameElement, AddressElement, PhoneElement, FileElement, PaymentElement, TermsElement, PageBreakElement, SectionBreakElement } from '@/components/index'
-import items from './components/Items.vue'
-import actions from './components/Actions.vue'
-import lookups from './components/Lookups.vue'
-import fields from './components/Fields.vue'
-import axios from 'axios'
-import APISettings from './components/ApiSettings'
+// // import APISettings from './components/ApiSettings'
+import Users from './components/views/Users.vue'
+import Actions from './components/views/Actions.vue'
+import Companies from './components/views/Companies.vue'
+import Categories from './components/views/Categories.vue'
+import PreviewForm from './components/views/PreviewForm.vue'
+import SubCategories from './components/views/SubCategories.vue'
 
 export default {
-  name: 'SampleApp',
+  name: 'QMEApp',
   components: {
-    items,
-    actions,
-    lookups,
-    fields,
-    QFormBuilder,
-    TextElement,
-    ParagraphElement,
-    CheckboxesElement,
-    RadioElement,
-    DateElement,
-    TimeElement,
-    DropdownElement,
-    EmailElement,
-    NameElement,
-    SimpleNameElement,
-    AddressElement,
-    PhoneElement,
-    FileElement,
-    PaymentElement,
-    TermsElement,
-    PageBreakElement,
-    SectionBreakElement
-},
+  Users,
+  Actions,
+  Companies,
+  Categories,
+  PreviewForm,
+  SubCategories
+  },
   data: function () {
     return {
       fields: [],
       fieldData: [],
       showDesignForm: false,
-      showItems: false,
-      showActions: false,
-      showLookups: false,
-      showFields: false,
-      items: {}
+      fieldValues: [{}],
+      tab: 'categories'
     }
   },
   methods: {
     /**
      * When a value is input into the rendered form, echo it to the debug line
      */
-    onInput (val, id) {
+    onInput(val, id) {
       // console.debug(`${id}: ` + JSON.stringify(val))
     },
     /**
      * Determine the name of the Element object based on the 'field_type' of the field data object
      */
-    getElement (field) {
+    getElement(field) {
+      debugger
       const nameParts = field.field_type.split('_')
       for (let i = 0; i < nameParts.length; i++) {
         nameParts[i] = nameParts[i].charAt(0).toUpperCase() + nameParts[i].slice(1)
@@ -112,72 +50,19 @@ export default {
       return nameParts.join('') + 'Element'
     },
 
-    onShowDesignForm () {
+    onShowDesignForm() {
       this.onResetViews()
       this.showDesignForm = true
     },
 
-    onShowItems () {
-      this.onResetViews()
-      this.showItems = true
-    },
-
-    onShowActions () {
-      this.onResetViews()
-      this.showActions = true
-    },
-
-    onShowLookups () {
-      this.onResetViews()
-      this.showLookups = true
-    },
-
-    onShowFields () {
-      this.onResetViews()
-      this.showFields = true
-    },
-
-    onResetViews () {
-      this.items = {}
+    onResetViews() {
       this.showDesignForm = false
-      this.showItems = false
-      this.showActions = false
-      this.showLookups = false
-      this.showFields = false
-    },
-
-    // eslint-disable-next-line space-before-blocks, space-before-function-paren
-    saveSchema(){
-      this.fields.forEach(element => {
-        console.log(element)
-        const data = {
-                caption: element.label,
-                description: element.field_options.description,
-                dataType: element.field_type,
-                fieldType: element.field_type,
-                isRequired: element.required,
-                itemId: 3,
-                actionId: 7,
-                isActive: true
-        }
-      axios.post(APISettings.baseURL + 'Fields/AddField', data,
-   {
-       headers: APISettings.getHeaders()[0],
-       params: APISettings.axiosParams()
-   }).then(res => {
-    this.onShowFields()
-     console.log(res)
-   }).catch(e => {
-     alert(e)
-   })
-  })
     }
-
   },
   watch: {
     fields: {
-      handler (val) {
-         console.log(val)
+      handler(val) {
+        // console.log(val)
       },
       deep: true
     }
@@ -185,8 +70,97 @@ export default {
 }
 </script>
 
+<template>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated>
+      <q-toolbar>
+        <q-toolbar-title>
+          <a href="http://127.0.0.1:5173/" style="color: white; text-decoration: none; width:auto;">Quote Me Easy Admin</a>
+        </q-toolbar-title>
+        <!-- <div>
+        <marquee>Total Estimates: 1,02,211&nbsp;&nbsp;||&nbsp;&nbsp;New/Outstanding Estimates: 22,213&nbsp;&nbsp;||&nbsp;&nbsp;Submitted Estimates: 7,221&nbsp;&nbsp;||&nbsp;&nbsp;Accepted Estimates: 3,213&nbsp;&nbsp;||&nbsp;&nbsp;Ignore Estimates: 23,212</marquee>
+      </div> -->
+    </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+    <div class="q-pa-md">
+    <div class="q-gutter-y-md" >
+      <q-card>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
+        >
+          <q-tab name="categories" label="Categories" />
+          <q-tab name="subCategories" label="Sub-Categories" />
+          <q-tab name="actions" label="Actions" />
+          <q-tab name="forms" label="Forms" />
+          <q-tab name="designForms" label="Design Forms" />
+          <q-tab name="companies" label="Companies" />
+          <q-tab name="users" label="Users" />
+          <q-tab name="estimateRequests" label="Estimate Requests" />
+        </q-tabs>
+
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="categories">
+            <div class="text-h6">List Of Categories</div>
+            <Categories/>
+          </q-tab-panel>
+
+          <q-tab-panel name="subCategories">
+            <div class="text-h6">List Of Sub-Categories</div>
+         <SubCategories/>
+          </q-tab-panel>
+
+          <q-tab-panel name="actions">
+            <div class="text-h6">List Of Actions</div>
+          <Actions/>
+          </q-tab-panel>
+
+          <q-tab-panel name="forms">
+            <div class="text-h6">List Of Forms</div>
+          </q-tab-panel>
+
+          <q-tab-panel name="designForms">
+            <PreviewForm/>
+          </q-tab-panel>
+
+          <q-tab-panel name="companies">
+            <div class="text-h6">List Of Companies</div>
+            <Companies/>
+          </q-tab-panel>
+
+          <q-tab-panel name="users">
+            <div class="text-h6">List Of Users</div>
+            <Users/>
+          </q-tab-panel>
+
+          <q-tab-panel name="estimateRequests">
+            <div class="text-h6">List Of Estimate Requests</div>
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card>
+    </div>
+  </div>
+</q-page-container>
+  </q-layout>
+</template>
+
 <style lang="stylus">
   .q-form-container
     max-width 820px
     margin auto
+
+  .q-card
+    width 100%
+
+  .q-form
+    width 100%
 </style>

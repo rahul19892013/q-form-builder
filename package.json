@@ -1,7 +1,7 @@
 {
   "name": "q-form-builder",
   "version": "0.2.2",
-  "author": "Matt Curtis <matt@curtii.com>",
+  "author": "Rahul Parab<rahul.parab@pegasusinfocorp.com>",
   "description": "Form Builder using drag-and-drop. Uses Quasar Framework and Vue.",
   "private": false,
   "scripts": {
@@ -13,10 +13,10 @@
   "main": "dist/q-form-builder.common.js",
   "unpkg": "dist/q-form-builder.umd.min.js",
   "license": "MIT",
-  "homepage": "https://github.com/baggachipz/q-form-builder#readme",
+  "homepage": "",
   "repository": {
     "type": "git",
-    "url": "git://github.com/baggachipz/q-form-builder.git"
+    "url": ""
   },
   "dependencies": {
     "@quasar/extras": "^1.9.6",
@@ -24,6 +24,7 @@
     "axios": "^1.3.5",
     "core-js": "^3.6.5",
     "luhn": "^2.4.1",
+    "moment": "^2.29.4",
     "quasar": "^1.14.0",
     "vue": "^2.6.12",
     "vue-router": "4",

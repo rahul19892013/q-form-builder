@@ -1,4 +1,3 @@
-import QFormBuilder from './DesignCategoryFlow'
 import TextElement from './elements/TextElement'
 import ParagraphElement from './elements/ParagraphElement'
 import CheckboxesElement from './elements/CheckboxesElement'
@@ -19,7 +18,6 @@ import PageBreakElement from './elements/PageBreakElement'
 import * as utils from './utils'
 
 export {
-  QFormBuilder,
   TextElement,
   ParagraphElement,
   CheckboxesElement,
@@ -41,7 +39,6 @@ export {
 }
 
 export default {
-  QFormBuilder,
   TextElement,
   ParagraphElement,
   CheckboxesElement,

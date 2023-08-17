@@ -19,7 +19,7 @@ const APISettings = {
     return [
               {
                   'Accept': 'application/json',
-                  'Authorization': 'bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsIm5iZiI6MTY4MTk4NjY3NSwiZXhwIjoxNjgyMDczMDc1LCJpYXQiOjE2ODE5ODY2NzV9.e9COmJi8ddd_BN6LQ6S5tZTK54MoqdM9jRyWlwcM0bI3QRoBjkkz5whzfremH96DWcVaE4-DS12YiWqxMkP5yQ',
+                  'Authorization': 'bearer ' + localStorage.getItem('token')
               }
           ]
   }

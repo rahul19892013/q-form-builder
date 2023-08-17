@@ -12,6 +12,7 @@
     <editable-checkboxes-options v-model="value.field_options" v-if="ifType('checkboxes')" />
     <editable-radio-options v-model="value.field_options" v-if="ifType('radio')" />
     <editable-dropdown-options v-model="value.field_options" v-if="ifType('dropdown')" />
+    <q-select v-model="model" :options="[1,2,3,4,5]" label="Sequence" />
   </form>
 </template>
 
